@@ -774,6 +774,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  overflow-y: auto;
+  padding: 1.25rem;
 }
 
 .modal-backdrop-custom {
@@ -786,10 +788,198 @@
 .resignation-modal {
   position: relative;
   z-index: 1;
-  width: min(92vw, 520px);
-  border-radius: 28px;
-  background: #fff;
+  width: min(92vw, 620px);
+  max-height: none;
+  overflow: visible;
+  border-radius: 32px;
+  background:
+    linear-gradient(180deg, #ffffff 0%, #fbfcff 100%);
   box-shadow: 0 32px 56px rgba(32, 46, 70, 0.2);
+}
+
+.resignation-modal-header,
+.resignation-modal-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.5rem 1.75rem;
+}
+
+.resignation-modal-header {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(255, 255, 255, 0.96));
+  border-bottom: 1px solid #edf1f7;
+}
+
+.resignation-modal .modal-body {
+  padding: 0 1.5rem 1rem;
+}
+
+.resignation-kicker {
+  display: inline-flex;
+  align-items: center;
+  margin-bottom: 0.55rem;
+  padding: 0.32rem 0.7rem;
+  border-radius: 999px;
+  background: rgba(45, 141, 89, 0.1);
+  color: #2d8d59;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.resignation-subtitle {
+  max-width: 44ch;
+  color: #8390a6;
+  font-size: 0.94rem;
+}
+
+.resignation-employee-card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin: 1rem 1.5rem 0.9rem;
+  padding: 0.95rem 1rem;
+  border: 1px solid #ebeff6;
+  border-radius: 22px;
+  background:
+    linear-gradient(135deg, #f2f8f3 0%, #f8fbff 100%);
+}
+
+.employee-avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 3.25rem;
+  height: 3.25rem;
+  border-radius: 18px;
+  background: linear-gradient(135deg, #2d8d59, #173224);
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 800;
+}
+
+.employee-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.18rem;
+}
+
+.employee-meta strong {
+  font-size: 1rem;
+  color: #1b2430;
+}
+
+.employee-meta span {
+  color: #7f8ca1;
+  font-size: 0.92rem;
+}
+
+.employee-status-chip {
+  margin-left: auto;
+  padding: 0.55rem 0.9rem;
+  border-radius: 999px;
+  background: rgba(244, 200, 74, 0.18);
+  color: #9a7604;
+  font-size: 0.84rem;
+  font-weight: 700;
+}
+
+.resignation-section-title {
+  margin-bottom: 0.65rem;
+  color: #1f2b3d;
+  font-size: 0.95rem;
+  font-weight: 800;
+}
+
+.resignation-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.85rem;
+  margin-bottom: 0.7rem;
+}
+
+.resignation-field {
+  margin-bottom: 0.8rem;
+}
+
+.resignation-field .form-label {
+  margin-bottom: 0.55rem;
+  color: #49576f;
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.input-shell {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 0 1rem;
+  border: 1px solid #e5ebf3;
+  border-radius: 16px;
+  background: #fff;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.input-shell:focus-within {
+  border-color: rgba(45, 141, 89, 0.45);
+  box-shadow: 0 0 0 4px rgba(45, 141, 89, 0.1);
+}
+
+.input-shell i {
+  color: #7f8ca1;
+  font-size: 1rem;
+}
+
+.input-shell .form-control,
+.input-shell .form-select {
+  min-height: 48px;
+  padding-left: 0;
+  border: 0;
+  box-shadow: none;
+  background: transparent;
+}
+
+.resignation-textarea {
+  min-height: 88px;
+  padding: 0.8rem 1rem;
+  border: 1px solid #e5ebf3;
+  border-radius: 18px;
+  resize: vertical;
+  box-shadow: none;
+}
+
+.resignation-textarea:focus {
+  border-color: rgba(45, 141, 89, 0.45);
+  box-shadow: 0 0 0 4px rgba(45, 141, 89, 0.1);
+}
+
+.field-helper {
+  display: none;
+  margin-top: 0.45rem;
+  color: #8d98aa;
+  font-size: 0.84rem;
+}
+
+.resignation-modal-footer {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 1));
+  border-top: 1px solid #edf1f7;
+}
+
+.resignation-secondary-btn,
+.resignation-primary-btn {
+  min-width: 138px;
+  padding: 0.8rem 1.2rem;
+  border-radius: 14px;
+  font-weight: 700;
+}
+
+.resignation-secondary-btn {
+  border: 1px solid #e2e8f0;
+  background: #f8fafc;
 }
 
 @media (max-width: 1199px) {
@@ -829,6 +1019,10 @@
   .sales-chart {
     overflow-x: auto;
   }
+
+  .resignation-form-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 @media (max-width: 575px) {
@@ -849,5 +1043,30 @@
   .toolbar-actions .btn,
   .search-box {
     width: 100%;
+  }
+
+  .modal-shell {
+    align-items: flex-start;
+    padding: 0.9rem;
+  }
+
+  .resignation-modal-header,
+  .resignation-modal-footer {
+    padding: 1.1rem 1rem;
+  }
+
+  .resignation-modal .modal-body {
+    padding: 0 1rem 0.9rem;
+  }
+
+  .resignation-employee-card {
+    margin: 1rem 1rem 0.85rem;
+    padding: 0.95rem;
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .employee-status-chip {
+    margin-left: 0;
   }
 }
