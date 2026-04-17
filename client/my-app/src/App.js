@@ -626,7 +626,7 @@ function UserManagementPage({ users, onOpenResignation }) {
                 <td>{user.id}</td>
                 <td>{user.employeeId}</td>
                 <td>
-                  <span className={user.highlight ? 'name-highlight' : ''}>{user.name}</span>
+                  <span className={''}>{user.name}</span>
                 </td>
                 <td>{user.mobile}</td>
                 <td>{user.email}</td>
