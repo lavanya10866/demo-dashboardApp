@@ -225,9 +225,9 @@ function LoginPage({ onLogin, loading, error }) {
   return (
     <div className="login-shell">
       <div className="login-backdrop"></div>
-      <div className="container">
-        <div className="row justify-content-center align-items-center min-vh-100 py-5">
-          <div className="col-12 col-lg-11">
+      <div className="container login-container">
+        <div className="row justify-content-center align-items-center login-stage">
+          <div className="col-12 col-xl-11">
             <div className="login-card shadow-lg">
               <div className="row g-0">
                 <div className="col-lg-6">
@@ -258,11 +258,7 @@ function LoginPage({ onLogin, loading, error }) {
                         <strong>20 active projects</strong>
                         <small>26 support tickets in progress</small>
                       </div>
-                      <div className="preview-card muted">
-                        <span>Demo access</span>
-                        <strong>admin@talentbank.com</strong>
-                        <small>Password: admin123</small>
-                      </div>
+            
                     </div>
                   </div>
                 </div>
