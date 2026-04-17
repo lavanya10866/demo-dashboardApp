@@ -572,12 +572,99 @@ function StatusBadge({ value }) {
   return <span className={`status-badge ${normalized}`}>{value}</span>;
 }
 
+const userBoardDates = ['03.06.2025', '05.06.2025', '08.06.2025', '10.06.2025', '13.06.2025'];
+const userStatusOrder = ['Active', 'Inactive', 'Resign'];
+
+function getUserColumnTone(status) {
+  if (status === 'Active') {
+    return 'active';
+  }
+
+  if (status === 'Inactive') {
+    return 'inactive';
+  }
+
+  return 'resign';
+}
+
 function UserManagementPage({ users, onOpenResignation }) {
+  const [searchTerm, setSearchTerm] = useState('');
+  const [roleFilter, setRoleFilter] = useState('all');
+  const [statusFilter, setStatusFilter] = useState('all');
+  const [viewMode, setViewMode] = useState('kanban');
+
+  const roleOptions = useMemo(
+    () => ['all', ...new Set(users.map((user) => user.role))],
+    [users]
+  );
+
+  const statusOptions = useMemo(
+    () => ['all', ...new Set(users.map((user) => user.status))],
+    [users]
+  );
+
+  const filteredUsers = useMemo(() => {
+    const searchValue = searchTerm.trim().toLowerCase();
+
+    return users
+      .filter((user) => {
+        if (roleFilter !== 'all' && user.role !== roleFilter) {
+          return false;
+        }
+
+        if (statusFilter !== 'all' && user.status !== statusFilter) {
+          return false;
+        }
+
+        if (!searchValue) {
+          return true;
+        }
+
+        const searchableText = [
+          user.employeeId,
+          user.name,
+          user.mobile,
+          user.email,
+          user.role,
+          user.status,
+        ]
+          .join(' ')
+          .toLowerCase();
+
+        return searchableText.includes(searchValue);
+      })
+      .map((user, index) => ({
+        ...user,
+        joinedOn: user.joinedOn || userBoardDates[index % userBoardDates.length],
+      }));
+  }, [users, roleFilter, statusFilter, searchTerm]);
+
+  const kanbanGroups = useMemo(() => {
+    const groups = userStatusOrder
+      .map((status) => ({
+        status,
+        users: filteredUsers.filter((user) => user.status === status),
+      }))
+      .filter((group) => group.users.length > 0);
+
+    if (groups.length > 0) {
+      return groups;
+    }
+
+    return [
+      {
+        status: statusFilter === 'all' ? 'Active' : statusFilter,
+        users: [],
+      },
+    ];
+  }, [filteredUsers, statusFilter]);
+
   return (
     <div className="panel-card">
       <div className="section-heading align-items-start">
         <div>
           <h3>User List</h3>
+          <p className="mb-0 text-muted">{filteredUsers.length} employees shown</p>
         </div>
         <button className="btn btn-success" type="button">
           <i className="bi bi-person-plus me-2"></i>
@@ -588,17 +675,46 @@ function UserManagementPage({ users, onOpenResignation }) {
       <div className="toolbar-row">
         <div className="search-box">
           <i className="bi bi-search"></i>
-          <input type="text" className="form-control" placeholder="Search" />
+          <input
+            type="text"
+            className="form-control"
+            placeholder="Search"
+            value={searchTerm}
+            onChange={(event) => setSearchTerm(event.target.value)}
+          />
         </div>
         <div className="toolbar-actions">
-          <select className="form-select">
-            <option>By role</option>
+          <select
+            className="form-select"
+            value={roleFilter}
+            onChange={(event) => setRoleFilter(event.target.value)}
+          >
+            <option value="all">By role</option>
+            {roleOptions.slice(1).map((role) => (
+              <option key={role} value={role}>
+                {role}
+              </option>
+            ))}
           </select>
-          <select className="form-select">
-            <option>By status</option>
+          <select
+            className="form-select"
+            value={statusFilter}
+            onChange={(event) => setStatusFilter(event.target.value)}
+          >
+            <option value="all">By status</option>
+            {statusOptions.slice(1).map((status) => (
+              <option key={status} value={status}>
+                {status}
+              </option>
+            ))}
           </select>
-          <select className="form-select">
-            <option>List View</option>
+          <select
+            className="form-select"
+            value={viewMode}
+            onChange={(event) => setViewMode(event.target.value)}
+          >
+            <option value="kanban">List View</option>
+            <option value="table">Table View</option>
           </select>
           <button className="btn btn-outline-success" type="button" onClick={onOpenResignation}>
             Resignation
@@ -606,57 +722,107 @@ function UserManagementPage({ users, onOpenResignation }) {
         </div>
       </div>
 
-      <div className="table-responsive">
-        <table className="table align-middle custom-table">
-          <thead>
-            <tr>
-              <th>S No</th>
-              <th>Employee ID</th>
-              <th>Employee name</th>
-              <th>Mobile no</th>
-              <th>Email ID</th>
-              <th>Role</th>
-              <th>Status</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {users.map((user) => (
-              <tr key={user.employeeId}>
-                <td>{user.id}</td>
-                <td>{user.employeeId}</td>
-                <td>
-                  <span className={''}>{user.name}</span>
-                </td>
-                <td>{user.mobile}</td>
-                <td>{user.email}</td>
-                <td>
-                  <a href="#/users" className="table-link">
-                    {user.role}
-                  </a>
-                </td>
-                <td>
-                  <StatusBadge value={user.status} />
-                </td>
-                <td className="action-links">
-                  <a href="#/users" className="table-link">
-                    <i className="bi bi-eye me-1"></i>
-                    View
-                  </a>
-                  <a href="#/users" className="table-link">
-                    <i className="bi bi-pencil me-1"></i>
-                    Edit
-                  </a>
-                  <a href="#/users" className="text-danger text-decoration-none">
-                    <i className="bi bi-trash me-1"></i>
-                    Delete
-                  </a>
-                </td>
+      {viewMode === 'table' ? (
+        <div className="table-responsive">
+          <table className="table align-middle custom-table">
+            <thead>
+              <tr>
+                <th>S No</th>
+                <th>Employee ID</th>
+                <th>Employee name</th>
+                <th>Mobile no</th>
+                <th>Email ID</th>
+                <th>Role</th>
+                <th>Status</th>
+                <th>Action</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+            </thead>
+            <tbody>
+              {filteredUsers.map((user) => (
+                <tr key={user.employeeId}>
+                  <td>{user.id}</td>
+                  <td>{user.employeeId}</td>
+                  <td>{user.name}</td>
+                  <td>{user.mobile}</td>
+                  <td>{user.email}</td>
+                  <td>
+                    <a href="#/users" className="table-link">
+                      {user.role}
+                    </a>
+                  </td>
+                  <td>
+                    <StatusBadge value={user.status} />
+                  </td>
+                  <td className="action-links">
+                    <a href="#/users" className="table-link">
+                      <i className="bi bi-eye me-1"></i>
+                      View
+                    </a>
+                    <a href="#/users" className="table-link">
+                      <i className="bi bi-pencil me-1"></i>
+                      Edit
+                    </a>
+                    <a href="#/users" className="text-danger text-decoration-none">
+                      <i className="bi bi-trash me-1"></i>
+                      Delete
+                    </a>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      ) : (
+        <div className="user-board">
+          {kanbanGroups.map((group) => (
+            <div className="user-board-column" key={group.status}>
+              <div className={`user-board-header ${getUserColumnTone(group.status)}`}>
+                <div>
+                  <strong>{group.status}</strong>
+                  <span>{filteredUsers.length === 0 ? '0%' : `${Math.round((group.users.length / filteredUsers.length) * 100)}%`}</span>
+                </div>
+                <span className="user-board-count">{group.users.length}</span>
+              </div>
+
+              <div className="user-board-stack">
+                {group.users.length === 0 ? (
+                  <div className="user-empty-state">No users found</div>
+                ) : (
+                  group.users.map((user) => (
+                    <div className="user-card" key={user.employeeId}>
+                      <div className="user-card-topline">
+                        <strong>{user.name}</strong>
+                        <span>{user.joinedOn}</span>
+                      </div>
+                      <div className="user-card-role">{user.role}</div>
+                      <div className="user-card-email">{user.email}</div>
+                      <div className="user-card-id">{user.employeeId}</div>
+                      <div className="user-card-actions">
+                        <a href="#/users" className="table-link">
+                          <i className="bi bi-eye me-1"></i>
+                          View
+                        </a>
+                        <a href="#/users" className="table-link">
+                          <i className="bi bi-pencil me-1"></i>
+                          Edit
+                        </a>
+                        <a href="#/users" className="text-danger text-decoration-none">
+                          <i className="bi bi-trash me-1"></i>
+                          Delete
+                        </a>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {filteredUsers.length === 0 ? (
+        <div className="user-empty-banner">No employees match the current search and filters.</div>
+      ) : null}
 
       <div className="pagination-row">
         <button className="page-circle">

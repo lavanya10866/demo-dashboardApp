@@ -615,6 +615,146 @@
   min-width: 130px;
 }
 
+.user-board {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+  gap: 1rem;
+}
+
+.user-board-column {
+  min-width: 0;
+}
+
+.user-board-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.85rem;
+  padding: 0.9rem 1rem;
+  border-radius: 18px 18px 12px 12px;
+}
+
+.user-board-header strong,
+.user-board-header span {
+  display: block;
+}
+
+.user-board-header > div span {
+  margin-top: 0.2rem;
+  font-size: 0.83rem;
+  color: #516078;
+}
+
+.user-board-header.active {
+  background: linear-gradient(135deg, #efefef, #dfdfdf);
+}
+
+.user-board-header.inactive {
+  background: linear-gradient(135deg, #d6f3fb, #c7eaf5);
+}
+
+.user-board-header.resign {
+  background: linear-gradient(135deg, #fff2ce, #f8e4ab);
+}
+
+.user-board-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  background: rgba(28, 37, 52, 0.72);
+  color: #fff;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.user-board-header.inactive .user-board-count {
+  background: #0ca1c2;
+}
+
+.user-board-header.resign .user-board-count {
+  background: #c99108;
+}
+
+.user-board-stack {
+  display: grid;
+  gap: 0.9rem;
+}
+
+.user-card {
+  padding: 0.95rem;
+  border: 1px solid #edf1f7;
+  border-bottom: 2px solid #3b82f6;
+  border-radius: 18px;
+  background: #fff;
+  box-shadow: 0 12px 24px rgba(84, 98, 125, 0.08);
+}
+
+.user-card-topline {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.45rem;
+}
+
+.user-card-topline strong {
+  font-size: 0.92rem;
+  color: #1e2a3b;
+}
+
+.user-card-topline span {
+  color: #98a4b5;
+  font-size: 0.73rem;
+  white-space: nowrap;
+}
+
+.user-card-role,
+.user-card-email,
+.user-card-id {
+  margin-bottom: 0.3rem;
+  font-size: 0.8rem;
+}
+
+.user-card-role {
+  color: #5a697f;
+}
+
+.user-card-email {
+  color: #7d899c;
+}
+
+.user-card-id {
+  color: #22314e;
+  font-weight: 700;
+}
+
+.user-card-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 0.75rem;
+  font-size: 0.82rem;
+  flex-wrap: wrap;
+}
+
+.user-empty-state,
+.user-empty-banner {
+  padding: 1rem 1.1rem;
+  border: 1px dashed #d9e2ef;
+  border-radius: 16px;
+  background: #f9fbff;
+  color: #6a7688;
+  text-align: center;
+}
+
+.user-empty-banner {
+  margin-top: 1rem;
+}
+
 .custom-table {
   --bs-table-bg: transparent;
   --bs-table-border-color: #edf1f6;
