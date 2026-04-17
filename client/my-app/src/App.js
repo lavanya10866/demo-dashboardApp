@@ -1,168 +1,30 @@
 import { useEffect, useMemo, useState } from 'react';
 import './App.css';
 
-const MOCK_RESPONSE = {
+const EMPTY_RESPONSE = {
   currentUser: {
-    name: 'Holland',
+    id: 0,
+    name: 'Talent Bank',
     role: 'Admin',
-    initials: 'HL',
-    email: 'admin@talentbank.com',
+    initials: 'TB',
+    email: '',
   },
   dashboard: {
-    overviewCards: [
-      { title: 'Total Projects', value: 20, note: 'Delivery pipeline', theme: 'coral' },
-      { title: 'Team Members', value: 20, note: 'Across all units', theme: 'sun' },
-      { title: 'Open Leads', value: 20, note: 'Need follow-up', theme: 'violet' },
-      { title: 'Resolved Tickets', value: 20, note: 'This month', theme: 'mint' },
-      { title: 'Pending Reviews', value: 20, note: 'Waiting on approvals', theme: 'peach' },
-      { title: 'New Requests', value: 20, note: 'Raised this week', theme: 'sky' },
-    ],
-    leadStats: [
-      { label: 'Assigned', value: 8, percent: 25, color: '#f4c84a' },
-      { label: 'In progress', value: 1, percent: 15, color: '#6e5a8e' },
-      { label: 'Review', value: 1, percent: 25, color: '#5da16f' },
-      { label: 'Final', value: 2, percent: 35, color: '#ee6257' },
-    ],
-    salesTrend: [
-      { day: 'Mon', total: 3, converted: 1 },
-      { day: 'Tue', total: 8, converted: 1 },
-      { day: 'Wed', total: 6, converted: 4 },
-      { day: 'Thu', total: 10, converted: 5 },
-      { day: 'Fri', total: 8, converted: 1 },
-      { day: 'Sat', total: 8, converted: 7 },
-      { day: 'Sun', total: 4, converted: 3 },
-    ],
-    supportSummary: [
-      { label: 'Solved', value: 18, color: '#eb5c57' },
-      { label: 'Unsolved', value: 8, color: '#f3cb4d' },
-      { label: 'In progress', value: 26, color: '#63a26f' },
-    ],
+    overviewCards: [],
+    leadStats: [],
+    salesTrend: [],
+    supportSummary: [],
   },
-  users: [
-    {
-      id: '01',
-      employeeId: 'TAL001',
-      name: 'Tom Holland',
-      mobile: '9876543210',
-      email: 'tomholland@gmail.com',
-      role: 'Executive manager',
-      status: 'Active',
-      highlight: true,
-    },
-    {
-      id: '02',
-      employeeId: 'TAL002',
-      name: 'Tom Hiddleston',
-      mobile: '9123456780',
-      email: 'tom.h@talentbank.com',
-      role: 'Sales manager',
-      status: 'Active',
-    },
-    {
-      id: '03',
-      employeeId: 'TAL003',
-      name: 'Zendaya Coleman',
-      mobile: '9000154321',
-      email: 'zendaya@talentbank.com',
-      role: 'Sales manager',
-      status: 'Resign',
-    },
-    {
-      id: '04',
-      employeeId: 'TAL004',
-      name: 'Jacob Batalon',
-      mobile: '9345678123',
-      email: 'jacob@talentbank.com',
-      role: 'Sales manager',
-      status: 'Active',
-    },
-    {
-      id: '05',
-      employeeId: 'TAL005',
-      name: 'Benedict Wong',
-      mobile: '9234567812',
-      email: 'benedict@talentbank.com',
-      role: 'General manager',
-      status: 'Inactive',
-    },
-  ],
-  projects: [
-    {
-      code: 'PRJ-001',
-      name: 'Core Banking Revamp',
-      owner: 'Holland',
-      progress: 72,
-      priority: 'High',
-      status: 'In progress',
-      dueDate: '24 Apr 2026',
-    },
-    {
-      code: 'PRJ-002',
-      name: 'Loan Onboarding Flow',
-      owner: 'Zendaya',
-      progress: 54,
-      priority: 'Medium',
-      status: 'Review',
-      dueDate: '28 Apr 2026',
-    },
-    {
-      code: 'PRJ-003',
-      name: 'Recruitment Dashboard',
-      owner: 'Tom Holland',
-      progress: 88,
-      priority: 'High',
-      status: 'Final',
-      dueDate: '03 May 2026',
-    },
-    {
-      code: 'PRJ-004',
-      name: 'Support Automation',
-      owner: 'Jacob',
-      progress: 39,
-      priority: 'Low',
-      status: 'Assigned',
-      dueDate: '07 May 2026',
-    },
-  ],
-  tickets: [
-    {
-      id: 'TIC-101',
-      subject: 'Unable to approve user leaves',
-      requester: 'Sarah M',
-      team: 'HR',
-      priority: 'High',
-      status: 'Solved',
-      updatedAt: '17 Apr 2026, 2:30 PM',
-    },
-    {
-      id: 'TIC-102',
-      subject: 'Sales report export failing',
-      requester: 'Ron C',
-      team: 'Sales',
-      priority: 'Medium',
-      status: 'In progress',
-      updatedAt: '17 Apr 2026, 1:05 PM',
-    },
-    {
-      id: 'TIC-103',
-      subject: 'Need project role access',
-      requester: 'Julie A',
-      team: 'Operations',
-      priority: 'Low',
-      status: 'Unsolved',
-      updatedAt: '17 Apr 2026, 11:18 AM',
-    },
-    {
-      id: 'TIC-104',
-      subject: 'Dashboard widget mismatch',
-      requester: 'Megan P',
-      team: 'Management',
-      priority: 'High',
-      status: 'Solved',
-      updatedAt: '16 Apr 2026, 5:42 PM',
-    },
-  ],
+  users: [],
+  projects: [],
+  tickets: [],
 };
+
+const USER_STATUS_OPTIONS = ['Active', 'Inactive', 'Resign'];
+const PROJECT_PRIORITY_OPTIONS = ['Low', 'Medium', 'High'];
+const PROJECT_STATUS_OPTIONS = ['Assigned', 'In progress', 'Review', 'Final'];
+const TICKET_PRIORITY_OPTIONS = ['Low', 'Medium', 'High'];
+const TICKET_STATUS_OPTIONS = ['Solved', 'Unsolved', 'In progress'];
 
 const pageTitles = {
   dashboard: 'Dashboard',
@@ -180,6 +42,166 @@ const navItems = [
 
 const API_BASE = process.env.REACT_APP_API_URL || '';
 
+function getInitials(name = '') {
+  const tokens = String(name)
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2);
+
+  if (tokens.length === 0) {
+    return 'TB';
+  }
+
+  return tokens.map((token) => token[0].toUpperCase()).join('');
+}
+
+function normalizeCurrentUser(user) {
+  return {
+    id: user?.id || 0,
+    name: user?.name || 'Talent Bank',
+    role: user?.role || 'Admin',
+    email: user?.email || '',
+    initials: user?.initials || getInitials(user?.name),
+  };
+}
+
+function getTodayInputValue() {
+  return new Date().toISOString().slice(0, 10);
+}
+
+const EMPLOYEE_ID_PATTERN = /^TAL\d{3,}$/;
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const MOBILE_PATTERN = /^\d{10}$/;
+const EMPLOYEE_NAME_PATTERN = /^[A-Za-z][A-Za-z\s.'-]{1,119}$/;
+
+function normalizeEmployeeId(value = '') {
+  return String(value).trim().toUpperCase();
+}
+
+function normalizeEmail(value = '') {
+  return String(value).trim().toLowerCase();
+}
+
+function getFieldClassName(baseClassName, hasError) {
+  return hasError ? `${baseClassName} field-invalid` : baseClassName;
+}
+
+function getNextEmployeeId(users = []) {
+  const highestValue = users.reduce((currentMax, user) => {
+    const match = normalizeEmployeeId(user.employeeId).match(/^TAL(\d+)$/);
+
+    if (!match) {
+      return currentMax;
+    }
+
+    return Math.max(currentMax, Number.parseInt(match[1], 10));
+  }, 0);
+
+  return `TAL${String(highestValue + 1).padStart(3, '0')}`;
+}
+
+function buildNewUserFormState(employeeId = '') {
+  return {
+    employeeId,
+    name: '',
+    mobile: '',
+    email: '',
+    role: '',
+    status: USER_STATUS_OPTIONS[0],
+    joinedOn: getTodayInputValue(),
+  };
+}
+
+function sanitizeUserFormValues(values) {
+  const sanitized = {
+    employeeId: normalizeEmployeeId(values.employeeId),
+    name: String(values.name || '').trim(),
+    mobile: String(values.mobile || '').trim(),
+    email: normalizeEmail(values.email),
+    role: String(values.role || '').trim(),
+    status: String(values.status || USER_STATUS_OPTIONS[0]).trim(),
+  };
+
+  if (Object.prototype.hasOwnProperty.call(values, 'joinedOn')) {
+    sanitized.joinedOn = String(values.joinedOn || '').trim();
+  }
+
+  return sanitized;
+}
+
+function getUserFormErrors(
+  values,
+  { existingUsers = [], currentEmployeeId = '', requireEmployeeId = false, requireJoinedOn = false } = {}
+) {
+  const errors = {};
+  const employeeId = normalizeEmployeeId(values.employeeId);
+  const email = normalizeEmail(values.email);
+  const normalizedCurrentEmployeeId = normalizeEmployeeId(currentEmployeeId);
+
+  if (requireEmployeeId) {
+    if (!employeeId) {
+      errors.employeeId = 'Employee ID is required.';
+    } else if (!EMPLOYEE_ID_PATTERN.test(employeeId)) {
+      errors.employeeId = 'Employee ID must use the format TAL001.';
+    } else if (
+      existingUsers.some(
+        (user) =>
+          normalizeEmployeeId(user.employeeId) === employeeId &&
+          normalizeEmployeeId(user.employeeId) !== normalizedCurrentEmployeeId
+      )
+    ) {
+      errors.employeeId = 'Employee ID already exists.';
+    }
+  }
+
+  if (!values.name) {
+    errors.name = 'Employee name is required.';
+  } else if (!EMPLOYEE_NAME_PATTERN.test(values.name)) {
+    errors.name = 'Use at least 2 letters. Spaces, apostrophes, periods, and hyphens are allowed.';
+  }
+
+  if (!values.mobile) {
+    errors.mobile = 'Mobile number is required.';
+  } else if (!MOBILE_PATTERN.test(values.mobile)) {
+    errors.mobile = 'Mobile number must be exactly 10 digits.';
+  }
+
+  if (!email) {
+    errors.email = 'Email is required.';
+  } else if (!EMAIL_PATTERN.test(email)) {
+    errors.email = 'Enter a valid email address.';
+  } else if (
+    existingUsers.some(
+      (user) =>
+        normalizeEmail(user.email) === email &&
+        normalizeEmployeeId(user.employeeId) !== normalizedCurrentEmployeeId
+    )
+  ) {
+    errors.email = 'That email address is already used by another employee.';
+  }
+
+  if (!values.role) {
+    errors.role = 'Role is required.';
+  } else if (values.role.length < 2) {
+    errors.role = 'Role must be at least 2 characters.';
+  }
+
+  if (!USER_STATUS_OPTIONS.includes(values.status)) {
+    errors.status = 'Select a valid status.';
+  }
+
+  if (requireJoinedOn) {
+    if (!values.joinedOn) {
+      errors.joinedOn = 'Joined date is required.';
+    } else if (!/^\d{4}-\d{2}-\d{2}$/.test(values.joinedOn)) {
+      errors.joinedOn = 'Joined date must be in YYYY-MM-DD format.';
+    }
+  }
+
+  return errors;
+}
+
 function getPageFromHash() {
   const route = window.location.hash.replace('#/', '').trim();
   if (!route) {
@@ -193,22 +215,24 @@ function setHash(route) {
   window.location.hash = `/${route}`;
 }
 
-async function fetchJson(path, fallback) {
-  try {
-    const response = await fetch(`${API_BASE}${path}`, {
-      headers: {
-        Accept: 'application/json',
-      },
-    });
+async function apiRequest(requestPath, options = {}) {
+  const hasJsonBody = options.body !== undefined;
+  const response = await fetch(`${API_BASE}${requestPath}`, {
+    method: options.method || 'GET',
+    headers: {
+      Accept: 'application/json',
+      ...(hasJsonBody ? { 'Content-Type': 'application/json' } : {}),
+      ...(options.headers || {}),
+    },
+    body: hasJsonBody ? JSON.stringify(options.body) : undefined,
+  });
+  const payload = await response.json().catch(() => null);
 
-    if (!response.ok) {
-      throw new Error(`Request failed for ${path}`);
-    }
-
-    return await response.json();
-  } catch (error) {
-    return fallback;
+  if (!response.ok) {
+    throw new Error(payload?.message || `Request failed for ${requestPath}`);
   }
+
+  return payload;
 }
 
 function LoginPage({ onLogin, loading, error }) {
@@ -474,6 +498,17 @@ function SupportBubbles({ items }) {
 }
 
 function DashboardPage({ dashboard }) {
+  const totalProjects =
+    dashboard.overviewCards.find((card) => card.title === 'Total Projects')?.value ?? 0;
+  const totalSales = dashboard.salesTrend.reduce(
+    (sum, item) => sum + Number(item.total || 0),
+    0
+  );
+  const totalTickets = dashboard.supportSummary.reduce(
+    (sum, item) => sum + Number(item.value || 0),
+    0
+  );
+
   return (
     <div className="content-stack">
       <div className="panel-card">
@@ -510,12 +545,12 @@ function DashboardPage({ dashboard }) {
                 <span className="section-icon">
                   <i className="bi bi-bullseye"></i>
                 </span>
-                <div>
-                  <h3>Leads Overview</h3>
-                  <p>Total projects</p>
+              <div>
+                  <h3>Project Status</h3>
+                  <p>Live breakdown from projects table</p>
                 </div>
               </div>
-              <strong className="headline-number">20</strong>
+              <strong className="headline-number">{totalProjects}</strong>
             </div>
             <DonutChart stats={dashboard.leadStats} />
           </div>
@@ -529,7 +564,7 @@ function DashboardPage({ dashboard }) {
                 </span>
                 <div>
                   <h3>Sales</h3>
-                  <p>Total sales 35</p>
+                  <p>Static demo trend {totalSales}</p>
                 </div>
               </div>
               <div className="mini-legend">
@@ -555,11 +590,11 @@ function DashboardPage({ dashboard }) {
               <i className="bi bi-headset"></i>
             </span>
             <div>
-              <h3>Support tickets</h3>
-              <p>Total tickets 26</p>
+              <h3>Support Status</h3>
+              <p>Live ticket totals {totalTickets}</p>
             </div>
           </div>
-          <span className="week-tag">This week</span>
+          <span className="week-tag">From database</span>
         </div>
         <SupportBubbles items={dashboard.supportSummary} />
       </div>
@@ -587,7 +622,15 @@ function getUserColumnTone(status) {
   return 'resign';
 }
 
-function UserManagementPage({ users, onOpenResignation }) {
+function UserManagementPage({
+  users,
+  onOpenResignation,
+  onOpenAddUser,
+  onEditUser,
+  onDeleteUser,
+  savingUserId,
+  deletingUserId,
+}) {
   const [searchTerm, setSearchTerm] = useState('');
   const [roleFilter, setRoleFilter] = useState('all');
   const [statusFilter, setStatusFilter] = useState('all');
@@ -666,10 +709,13 @@ function UserManagementPage({ users, onOpenResignation }) {
           <h3>User List</h3>
           <p className="mb-0 text-muted">{filteredUsers.length} employees shown</p>
         </div>
-        <button className="btn btn-success" type="button">
-          <i className="bi bi-person-plus me-2"></i>
-          Add Employee
-        </button>
+        <div className="title-actions">
+          {/* <span className="toolbar-pill">MySQL-backed records</span> */}
+          <button className="btn btn-success" type="button" onClick={onOpenAddUser}>
+            <i className="bi bi-person-plus me-2"></i>
+            Add Employee
+          </button>
+        </div>
       </div>
 
       <div className="toolbar-row">
@@ -746,26 +792,30 @@ function UserManagementPage({ users, onOpenResignation }) {
                   <td>{user.mobile}</td>
                   <td>{user.email}</td>
                   <td>
-                    <a href="#/users" className="table-link">
-                      {user.role}
-                    </a>
+                    <span className="table-link">{user.role}</span>
                   </td>
                   <td>
                     <StatusBadge value={user.status} />
                   </td>
                   <td className="action-links">
-                    <a href="#/users" className="table-link">
-                      <i className="bi bi-eye me-1"></i>
-                      View
-                    </a>
-                    <a href="#/users" className="table-link">
+                    <button
+                      className="table-action-button"
+                      type="button"
+                      onClick={() => onEditUser(user)}
+                      disabled={savingUserId === user.employeeId || deletingUserId === user.employeeId}
+                    >
                       <i className="bi bi-pencil me-1"></i>
-                      Edit
-                    </a>
-                    <a href="#/users" className="text-danger text-decoration-none">
+                      {savingUserId === user.employeeId ? 'Saving...' : 'Edit'}
+                    </button>
+                    <button
+                      className="table-action-button danger"
+                      type="button"
+                      onClick={() => onDeleteUser(user)}
+                      disabled={savingUserId === user.employeeId || deletingUserId === user.employeeId}
+                    >
                       <i className="bi bi-trash me-1"></i>
-                      Delete
-                    </a>
+                      {deletingUserId === user.employeeId ? 'Deleting...' : 'Delete'}
+                    </button>
                   </td>
                 </tr>
               ))}
@@ -798,18 +848,24 @@ function UserManagementPage({ users, onOpenResignation }) {
                       <div className="user-card-email">{user.email}</div>
                       <div className="user-card-id">{user.employeeId}</div>
                       <div className="user-card-actions">
-                        <a href="#/users" className="table-link">
-                          <i className="bi bi-eye me-1"></i>
-                          View
-                        </a>
-                        <a href="#/users" className="table-link">
+                        <button
+                          className="table-action-button"
+                          type="button"
+                          onClick={() => onEditUser(user)}
+                          disabled={savingUserId === user.employeeId || deletingUserId === user.employeeId}
+                        >
                           <i className="bi bi-pencil me-1"></i>
-                          Edit
-                        </a>
-                        <a href="#/users" className="text-danger text-decoration-none">
+                          {savingUserId === user.employeeId ? 'Saving...' : 'Edit'}
+                        </button>
+                        <button
+                          className="table-action-button danger"
+                          type="button"
+                          onClick={() => onDeleteUser(user)}
+                          disabled={savingUserId === user.employeeId || deletingUserId === user.employeeId}
+                        >
                           <i className="bi bi-trash me-1"></i>
-                          Delete
-                        </a>
+                          {deletingUserId === user.employeeId ? 'Deleting...' : 'Delete'}
+                        </button>
                       </div>
                     </div>
                   ))
@@ -843,7 +899,7 @@ function UserManagementPage({ users, onOpenResignation }) {
   );
 }
 
-function ProjectManagementPage({ projects }) {
+function ProjectManagementPage({ projects, onOpenCreateProject }) {
   return (
     <div className="content-stack">
       <div className="row g-4">
@@ -874,7 +930,7 @@ function ProjectManagementPage({ projects }) {
             <h3>Project tracker</h3>
             <p>Current delivery board</p>
           </div>
-          <button className="btn btn-success" type="button">
+          <button className="btn btn-success" type="button" onClick={onOpenCreateProject}>
             <i className="bi bi-plus-lg me-2"></i>
             New project
           </button>
@@ -922,7 +978,7 @@ function ProjectManagementPage({ projects }) {
   );
 }
 
-function SupportTicketsPage({ tickets }) {
+function SupportTicketsPage({ tickets, onOpenCreateTicket }) {
   const solvedCount = tickets.filter((ticket) => ticket.status === 'Solved').length;
   const progressCount = tickets.filter((ticket) => ticket.status === 'In progress').length;
   const unsolvedCount = tickets.filter((ticket) => ticket.status === 'Unsolved').length;
@@ -956,7 +1012,7 @@ function SupportTicketsPage({ tickets }) {
             <h3>Support queue</h3>
             <p>Latest issues raised by internal teams</p>
           </div>
-          <button className="btn btn-success" type="button">
+          <button className="btn btn-success" type="button" onClick={onOpenCreateTicket}>
             <i className="bi bi-life-preserver me-2"></i>
             Create ticket
           </button>
@@ -992,6 +1048,640 @@ function SupportTicketsPage({ tickets }) {
             </tbody>
           </table>
         </div>
+      </div>
+    </div>
+  );
+}
+
+function AddUserModal({ open, saving, error, users, onClose, onSave }) {
+  const nextEmployeeId = useMemo(() => getNextEmployeeId(users), [users]);
+  const [formValues, setFormValues] = useState(() => buildNewUserFormState(nextEmployeeId));
+  const [fieldErrors, setFieldErrors] = useState({});
+
+  useEffect(() => {
+    if (!open) {
+      return;
+    }
+
+    setFormValues(buildNewUserFormState(nextEmployeeId));
+    setFieldErrors({});
+  }, [nextEmployeeId, open]);
+
+  if (!open) {
+    return null;
+  }
+
+  const updateField = (field) => (event) => {
+    const nextValue =
+      field === 'mobile' ? event.target.value.replace(/\D/g, '').slice(0, 10) : event.target.value;
+
+    setFormValues((current) => ({
+      ...current,
+      [field]: nextValue,
+    }));
+    setFieldErrors((current) => {
+      if (!current[field]) {
+        return current;
+      }
+
+      const nextErrors = { ...current };
+      delete nextErrors[field];
+      return nextErrors;
+    });
+  };
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    const nextValues = sanitizeUserFormValues(formValues);
+    const nextErrors = getUserFormErrors(nextValues, {
+      existingUsers: users,
+      requireEmployeeId: true,
+      requireJoinedOn: true,
+    });
+
+    if (Object.keys(nextErrors).length > 0) {
+      setFieldErrors(nextErrors);
+      return;
+    }
+
+    onSave(nextValues);
+  };
+
+  return (
+    <div className="modal-shell" role="dialog" aria-modal="true">
+      <div className="modal-backdrop-custom" onClick={saving ? undefined : onClose}></div>
+      <div className="edit-user-modal">
+        <div className="resignation-modal-header">
+          <div>
+            <span className="resignation-kicker">Employee Record</span>
+            <h4 className="modal-title mb-1">Add employee</h4>
+            <p className="resignation-subtitle mb-0">
+              Create a new employee record and save it directly to MySQL.
+            </p>
+          </div>
+          <button className="btn-close" type="button" onClick={onClose} disabled={saving}></button>
+        </div>
+
+        <form onSubmit={handleSubmit} className="modal-body pt-0">
+          <div className="edit-form-grid">
+            <div className="resignation-field">
+              <label className="form-label">Employee ID</label>
+              <input
+                className={getFieldClassName('form-control', Boolean(fieldErrors.employeeId))}
+                value={formValues.employeeId}
+                readOnly
+                disabled={saving}
+              />
+              <div className="field-hint">Auto-generated from the latest employee ID.</div>
+              {fieldErrors.employeeId ? <div className="field-feedback">{fieldErrors.employeeId}</div> : null}
+            </div>
+            <div className="resignation-field">
+              <label className="form-label">Joined date</label>
+              <input
+                className={getFieldClassName('form-control', Boolean(fieldErrors.joinedOn))}
+                type="date"
+                value={formValues.joinedOn}
+                onChange={updateField('joinedOn')}
+                disabled={saving}
+                required
+              />
+              {fieldErrors.joinedOn ? <div className="field-feedback">{fieldErrors.joinedOn}</div> : null}
+            </div>
+            <div className="resignation-field">
+              <label className="form-label">Employee name</label>
+              <input
+                className={getFieldClassName('form-control', Boolean(fieldErrors.name))}
+                value={formValues.name}
+                onChange={updateField('name')}
+                disabled={saving}
+                maxLength={120}
+                required
+              />
+              {fieldErrors.name ? <div className="field-feedback">{fieldErrors.name}</div> : null}
+            </div>
+            <div className="resignation-field">
+              <label className="form-label">Mobile number</label>
+              <input
+                className={getFieldClassName('form-control', Boolean(fieldErrors.mobile))}
+                value={formValues.mobile}
+                onChange={updateField('mobile')}
+                inputMode="numeric"
+                maxLength={10}
+                disabled={saving}
+                required
+              />
+              {fieldErrors.mobile ? <div className="field-feedback">{fieldErrors.mobile}</div> : null}
+            </div>
+            <div className="resignation-field">
+              <label className="form-label">Email</label>
+              <input
+                className={getFieldClassName('form-control', Boolean(fieldErrors.email))}
+                type="email"
+                value={formValues.email}
+                onChange={updateField('email')}
+                disabled={saving}
+                required
+              />
+              {fieldErrors.email ? <div className="field-feedback">{fieldErrors.email}</div> : null}
+            </div>
+            <div className="resignation-field">
+              <label className="form-label">Role</label>
+              <input
+                className={getFieldClassName('form-control', Boolean(fieldErrors.role))}
+                value={formValues.role}
+                onChange={updateField('role')}
+                disabled={saving}
+                maxLength={120}
+                required
+              />
+              {fieldErrors.role ? <div className="field-feedback">{fieldErrors.role}</div> : null}
+            </div>
+            <div className="resignation-field full-width">
+              <label className="form-label">Status</label>
+              <select
+                className={getFieldClassName('form-select', Boolean(fieldErrors.status))}
+                value={formValues.status}
+                onChange={updateField('status')}
+                disabled={saving}
+              >
+                {USER_STATUS_OPTIONS.map((status) => (
+                  <option key={status} value={status}>
+                    {status}
+                  </option>
+                ))}
+              </select>
+              {fieldErrors.status ? <div className="field-feedback">{fieldErrors.status}</div> : null}
+            </div>
+          </div>
+
+          {error ? <div className="form-feedback error">{error}</div> : null}
+
+          <div className="resignation-modal-footer edit-user-footer">
+            <button
+              className="btn btn-light resignation-secondary-btn"
+              type="button"
+              onClick={onClose}
+              disabled={saving}
+            >
+              Cancel
+            </button>
+            <button className="btn btn-success resignation-primary-btn" type="submit" disabled={saving}>
+              {saving ? 'Saving...' : 'Create employee'}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}
+
+function DeleteUserModal({ user, deleting, error, onClose, onConfirm }) {
+  if (!user) {
+    return null;
+  }
+
+  return (
+    <div className="modal-shell" role="dialog" aria-modal="true">
+      <div className="modal-backdrop-custom" onClick={deleting ? undefined : onClose}></div>
+      <div className="confirm-modal">
+        <div className="resignation-modal-header">
+          <div>
+            <span className="resignation-kicker danger">Delete Record</span>
+            <h4 className="modal-title mb-1">Delete employee</h4>
+            <p className="resignation-subtitle mb-0">
+              This removes {user.name} ({user.employeeId}) from MySQL.
+            </p>
+          </div>
+          <button className="btn-close" type="button" onClick={onClose} disabled={deleting}></button>
+        </div>
+
+        <div className="confirm-modal-body">
+          <p className="confirm-copy">
+            This action cannot be undone. Please confirm before deleting the record.
+          </p>
+          {error ? <div className="form-feedback error compact">{error}</div> : null}
+        </div>
+
+        <div className="resignation-modal-footer">
+          <button
+            className="btn btn-light resignation-secondary-btn"
+            type="button"
+            onClick={onClose}
+            disabled={deleting}
+          >
+            Cancel
+          </button>
+          <button className="btn btn-danger resignation-primary-btn" type="button" onClick={onConfirm} disabled={deleting}>
+            {deleting ? 'Deleting...' : 'Delete employee'}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function CreateProjectModal({ open, saving, error, onClose, onSave }) {
+  const [formValues, setFormValues] = useState({
+    code: '',
+    name: '',
+    owner: '',
+    progress: '0',
+    priority: PROJECT_PRIORITY_OPTIONS[1],
+    status: PROJECT_STATUS_OPTIONS[0],
+    dueDate: getTodayInputValue(),
+  });
+
+  useEffect(() => {
+    if (!open) {
+      return;
+    }
+
+    setFormValues({
+      code: '',
+      name: '',
+      owner: '',
+      progress: '0',
+      priority: PROJECT_PRIORITY_OPTIONS[1],
+      status: PROJECT_STATUS_OPTIONS[0],
+      dueDate: getTodayInputValue(),
+    });
+  }, [open]);
+
+  if (!open) {
+    return null;
+  }
+
+  const updateField = (field) => (event) => {
+    const { value } = event.target;
+    setFormValues((current) => ({
+      ...current,
+      [field]: value,
+    }));
+  };
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    onSave(formValues);
+  };
+
+  return (
+    <div className="modal-shell" role="dialog" aria-modal="true">
+      <div className="modal-backdrop-custom" onClick={saving ? undefined : onClose}></div>
+      <div className="edit-user-modal">
+        <div className="resignation-modal-header">
+          <div>
+            <span className="resignation-kicker">Project Record</span>
+            <h4 className="modal-title mb-1">Create project</h4>
+            <p className="resignation-subtitle mb-0">
+              Add a project card and tracker row from one form.
+            </p>
+          </div>
+          <button className="btn-close" type="button" onClick={onClose} disabled={saving}></button>
+        </div>
+
+        <form onSubmit={handleSubmit} className="modal-body pt-0">
+          <div className="edit-form-grid">
+            <div className="resignation-field">
+              <label className="form-label">Project code</label>
+              <input className="form-control" value={formValues.code} onChange={updateField('code')} disabled={saving} required />
+            </div>
+            <div className="resignation-field">
+              <label className="form-label">Owner</label>
+              <input className="form-control" value={formValues.owner} onChange={updateField('owner')} disabled={saving} required />
+            </div>
+            <div className="resignation-field full-width">
+              <label className="form-label">Project name</label>
+              <input className="form-control" value={formValues.name} onChange={updateField('name')} disabled={saving} required />
+            </div>
+            <div className="resignation-field">
+              <label className="form-label">Progress</label>
+              <input className="form-control" type="number" min="0" max="100" value={formValues.progress} onChange={updateField('progress')} disabled={saving} required />
+            </div>
+            <div className="resignation-field">
+              <label className="form-label">Due date</label>
+              <input className="form-control" type="date" value={formValues.dueDate} onChange={updateField('dueDate')} disabled={saving} required />
+            </div>
+            <div className="resignation-field">
+              <label className="form-label">Priority</label>
+              <select className="form-select" value={formValues.priority} onChange={updateField('priority')} disabled={saving}>
+                {PROJECT_PRIORITY_OPTIONS.map((priority) => (
+                  <option key={priority} value={priority}>
+                    {priority}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="resignation-field">
+              <label className="form-label">Status</label>
+              <select className="form-select" value={formValues.status} onChange={updateField('status')} disabled={saving}>
+                {PROJECT_STATUS_OPTIONS.map((status) => (
+                  <option key={status} value={status}>
+                    {status}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          {error ? <div className="form-feedback error">{error}</div> : null}
+
+          <div className="resignation-modal-footer edit-user-footer">
+            <button className="btn btn-light resignation-secondary-btn" type="button" onClick={onClose} disabled={saving}>
+              Cancel
+            </button>
+            <button className="btn btn-success resignation-primary-btn" type="submit" disabled={saving}>
+              {saving ? 'Saving...' : 'Create project'}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}
+
+function CreateTicketModal({ open, saving, error, onClose, onSave }) {
+  const [formValues, setFormValues] = useState({
+    id: '',
+    subject: '',
+    requester: '',
+    team: '',
+    priority: TICKET_PRIORITY_OPTIONS[1],
+    status: TICKET_STATUS_OPTIONS[1],
+  });
+
+  useEffect(() => {
+    if (!open) {
+      return;
+    }
+
+    setFormValues({
+      id: '',
+      subject: '',
+      requester: '',
+      team: '',
+      priority: TICKET_PRIORITY_OPTIONS[1],
+      status: TICKET_STATUS_OPTIONS[1],
+    });
+  }, [open]);
+
+  if (!open) {
+    return null;
+  }
+
+  const updateField = (field) => (event) => {
+    const { value } = event.target;
+    setFormValues((current) => ({
+      ...current,
+      [field]: value,
+    }));
+  };
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    onSave(formValues);
+  };
+
+  return (
+    <div className="modal-shell" role="dialog" aria-modal="true">
+      <div className="modal-backdrop-custom" onClick={saving ? undefined : onClose}></div>
+      <div className="edit-user-modal">
+        <div className="resignation-modal-header">
+          <div>
+            <span className="resignation-kicker">Support Ticket</span>
+            <h4 className="modal-title mb-1">Create ticket</h4>
+            <p className="resignation-subtitle mb-0">
+              Add a new support issue and push it to the tickets table immediately.
+            </p>
+          </div>
+          <button className="btn-close" type="button" onClick={onClose} disabled={saving}></button>
+        </div>
+
+        <form onSubmit={handleSubmit} className="modal-body pt-0">
+          <div className="edit-form-grid">
+            <div className="resignation-field">
+              <label className="form-label">Ticket ID</label>
+              <input className="form-control" value={formValues.id} onChange={updateField('id')} disabled={saving} required />
+            </div>
+            <div className="resignation-field">
+              <label className="form-label">Requester</label>
+              <input className="form-control" value={formValues.requester} onChange={updateField('requester')} disabled={saving} required />
+            </div>
+            <div className="resignation-field full-width">
+              <label className="form-label">Subject</label>
+              <input className="form-control" value={formValues.subject} onChange={updateField('subject')} disabled={saving} required />
+            </div>
+            <div className="resignation-field">
+              <label className="form-label">Team</label>
+              <input className="form-control" value={formValues.team} onChange={updateField('team')} disabled={saving} required />
+            </div>
+            <div className="resignation-field">
+              <label className="form-label">Priority</label>
+              <select className="form-select" value={formValues.priority} onChange={updateField('priority')} disabled={saving}>
+                {TICKET_PRIORITY_OPTIONS.map((priority) => (
+                  <option key={priority} value={priority}>
+                    {priority}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="resignation-field full-width">
+              <label className="form-label">Status</label>
+              <select className="form-select" value={formValues.status} onChange={updateField('status')} disabled={saving}>
+                {TICKET_STATUS_OPTIONS.map((status) => (
+                  <option key={status} value={status}>
+                    {status}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          {error ? <div className="form-feedback error">{error}</div> : null}
+
+          <div className="resignation-modal-footer edit-user-footer">
+            <button className="btn btn-light resignation-secondary-btn" type="button" onClick={onClose} disabled={saving}>
+              Cancel
+            </button>
+            <button className="btn btn-success resignation-primary-btn" type="submit" disabled={saving}>
+              {saving ? 'Saving...' : 'Create ticket'}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}
+
+function EditUserModal({ user, saving, error, users, onClose, onSave }) {
+  const [formValues, setFormValues] = useState({
+    employeeId: '',
+    name: '',
+    mobile: '',
+    email: '',
+    role: '',
+    status: USER_STATUS_OPTIONS[0],
+  });
+  const [fieldErrors, setFieldErrors] = useState({});
+
+  useEffect(() => {
+    if (!user) {
+      return;
+    }
+
+    setFormValues({
+      employeeId: user.employeeId || '',
+      name: user.name || '',
+      mobile: user.mobile || '',
+      email: user.email || '',
+      role: user.role || '',
+      status: user.status || USER_STATUS_OPTIONS[0],
+    });
+    setFieldErrors({});
+  }, [user]);
+
+  if (!user) {
+    return null;
+  }
+
+  const updateField = (field) => (event) => {
+    const nextValue =
+      field === 'mobile' ? event.target.value.replace(/\D/g, '').slice(0, 10) : event.target.value;
+
+    setFormValues((current) => ({
+      ...current,
+      [field]: nextValue,
+    }));
+    setFieldErrors((current) => {
+      if (!current[field]) {
+        return current;
+      }
+
+      const nextErrors = { ...current };
+      delete nextErrors[field];
+      return nextErrors;
+    });
+  };
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    const nextValues = sanitizeUserFormValues(formValues);
+    const nextErrors = getUserFormErrors(nextValues, {
+      existingUsers: users,
+      currentEmployeeId: user.employeeId,
+    });
+
+    if (Object.keys(nextErrors).length > 0) {
+      setFieldErrors(nextErrors);
+      return;
+    }
+
+    onSave(nextValues);
+  };
+
+  return (
+    <div className="modal-shell" role="dialog" aria-modal="true">
+      <div className="modal-backdrop-custom" onClick={saving ? undefined : onClose}></div>
+      <div className="edit-user-modal">
+        <div className="resignation-modal-header">
+          <div>
+            <span className="resignation-kicker">Employee Record</span>
+            <h4 className="modal-title mb-1">Edit employee details</h4>
+            <p className="resignation-subtitle mb-0">
+              Changes made here are saved to MySQL and shown immediately in the dashboard.
+            </p>
+          </div>
+          <button className="btn-close" type="button" onClick={onClose} disabled={saving}></button>
+        </div>
+
+        <form onSubmit={handleSubmit} className="modal-body pt-0">
+          <div className="edit-form-grid">
+            <div className="resignation-field">
+              <label className="form-label">Employee ID</label>
+              <input className="form-control" value={formValues.employeeId} disabled />
+            </div>
+            <div className="resignation-field">
+              <label className="form-label">Status</label>
+              <select
+                className={getFieldClassName('form-select', Boolean(fieldErrors.status))}
+                value={formValues.status}
+                onChange={updateField('status')}
+                disabled={saving}
+              >
+                {USER_STATUS_OPTIONS.map((status) => (
+                  <option key={status} value={status}>
+                    {status}
+                  </option>
+                ))}
+              </select>
+              {fieldErrors.status ? <div className="field-feedback">{fieldErrors.status}</div> : null}
+            </div>
+            <div className="resignation-field">
+              <label className="form-label">Employee name</label>
+              <input
+                className={getFieldClassName('form-control', Boolean(fieldErrors.name))}
+                value={formValues.name}
+                onChange={updateField('name')}
+                disabled={saving}
+                maxLength={120}
+                required
+              />
+              {fieldErrors.name ? <div className="field-feedback">{fieldErrors.name}</div> : null}
+            </div>
+            <div className="resignation-field">
+              <label className="form-label">Mobile number</label>
+              <input
+                className={getFieldClassName('form-control', Boolean(fieldErrors.mobile))}
+                value={formValues.mobile}
+                onChange={updateField('mobile')}
+                inputMode="numeric"
+                maxLength={10}
+                disabled={saving}
+                required
+              />
+              {fieldErrors.mobile ? <div className="field-feedback">{fieldErrors.mobile}</div> : null}
+            </div>
+            <div className="resignation-field">
+              <label className="form-label">Email</label>
+              <input
+                className={getFieldClassName('form-control', Boolean(fieldErrors.email))}
+                type="email"
+                value={formValues.email}
+                onChange={updateField('email')}
+                disabled={saving}
+                required
+              />
+              {fieldErrors.email ? <div className="field-feedback">{fieldErrors.email}</div> : null}
+            </div>
+            <div className="resignation-field">
+              <label className="form-label">Role</label>
+              <input
+                className={getFieldClassName('form-control', Boolean(fieldErrors.role))}
+                value={formValues.role}
+                onChange={updateField('role')}
+                disabled={saving}
+                maxLength={120}
+                required
+              />
+              {fieldErrors.role ? <div className="field-feedback">{fieldErrors.role}</div> : null}
+            </div>
+          </div>
+
+          {error ? <div className="form-feedback error">{error}</div> : null}
+
+          <div className="resignation-modal-footer edit-user-footer">
+            <button
+              className="btn btn-light resignation-secondary-btn"
+              type="button"
+              onClick={onClose}
+              disabled={saving}
+            >
+              Cancel
+            </button>
+            <button className="btn btn-success resignation-primary-btn" type="submit" disabled={saving}>
+              {saving ? 'Saving...' : 'Save changes'}
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   );
@@ -1094,7 +1784,20 @@ function ResignationModal({ open, onClose }) {
   );
 }
 
-function AppShell({ data, activePage, onNavigate, onLogout, onOpenResignation }) {
+function AppShell({
+  data,
+  activePage,
+  onNavigate,
+  onLogout,
+  onOpenResignation,
+  onOpenAddUser,
+  onEditUser,
+  onDeleteUser,
+  savingUserId,
+  deletingUserId,
+  onOpenCreateProject,
+  onOpenCreateTicket,
+}) {
   const title = pageTitles[activePage] || 'Dashboard';
 
   return (
@@ -1104,10 +1807,22 @@ function AppShell({ data, activePage, onNavigate, onLogout, onOpenResignation })
         <TopBar title={title} user={data.currentUser} onLogout={onLogout} />
         {activePage === 'dashboard' ? <DashboardPage dashboard={data.dashboard} /> : null}
         {activePage === 'users' ? (
-          <UserManagementPage users={data.users} onOpenResignation={onOpenResignation} />
+          <UserManagementPage
+            users={data.users}
+            onOpenResignation={onOpenResignation}
+            onOpenAddUser={onOpenAddUser}
+            onEditUser={onEditUser}
+            onDeleteUser={onDeleteUser}
+            savingUserId={savingUserId}
+            deletingUserId={deletingUserId}
+          />
         ) : null}
-        {activePage === 'projects' ? <ProjectManagementPage projects={data.projects} /> : null}
-        {activePage === 'tickets' ? <SupportTicketsPage tickets={data.tickets} /> : null}
+        {activePage === 'projects' ? (
+          <ProjectManagementPage projects={data.projects} onOpenCreateProject={onOpenCreateProject} />
+        ) : null}
+        {activePage === 'tickets' ? (
+          <SupportTicketsPage tickets={data.tickets} onOpenCreateTicket={onOpenCreateTicket} />
+        ) : null}
       </main>
     </div>
   );
@@ -1119,7 +1834,42 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [showResignationModal, setShowResignationModal] = useState(false);
-  const [data, setData] = useState(MOCK_RESPONSE);
+  const [data, setData] = useState(EMPTY_RESPONSE);
+  const [showAddUserModal, setShowAddUserModal] = useState(false);
+  const [editingUser, setEditingUser] = useState(null);
+  const [savingUser, setSavingUser] = useState(false);
+  const [saveUserError, setSaveUserError] = useState('');
+  const [creatingUser, setCreatingUser] = useState(false);
+  const [createUserError, setCreateUserError] = useState('');
+  const [deletingUser, setDeletingUser] = useState(null);
+  const [deleteUserPending, setDeleteUserPending] = useState(false);
+  const [deleteUserError, setDeleteUserError] = useState('');
+  const [showCreateProjectModal, setShowCreateProjectModal] = useState(false);
+  const [creatingProject, setCreatingProject] = useState(false);
+  const [createProjectError, setCreateProjectError] = useState('');
+  const [showCreateTicketModal, setShowCreateTicketModal] = useState(false);
+  const [creatingTicket, setCreatingTicket] = useState(false);
+  const [createTicketError, setCreateTicketError] = useState('');
+
+  const fetchWorkspaceData = () =>
+    Promise.all([
+      apiRequest('/api/dashboard'),
+      apiRequest('/api/users'),
+      apiRequest('/api/projects'),
+      apiRequest('/api/tickets'),
+    ]);
+
+  const syncWorkspaceData = async () => {
+    const [dashboard, users, projects, tickets] = await fetchWorkspaceData();
+
+    setData((current) => ({
+      ...current,
+      dashboard,
+      users,
+      projects,
+      tickets,
+    }));
+  };
 
   useEffect(() => {
     if (!window.location.hash) {
@@ -1148,24 +1898,27 @@ function App() {
 
     let cancelled = false;
 
-    Promise.all([
-      fetchJson('/api/dashboard', MOCK_RESPONSE.dashboard),
-      fetchJson('/api/users', MOCK_RESPONSE.users),
-      fetchJson('/api/projects', MOCK_RESPONSE.projects),
-      fetchJson('/api/tickets', MOCK_RESPONSE.tickets),
-    ]).then(([dashboard, users, projects, tickets]) => {
-      if (cancelled) {
-        return;
-      }
+    fetchWorkspaceData()
+      .then(([dashboard, users, projects, tickets]) => {
+        if (cancelled) {
+          return;
+        }
 
-      setData((current) => ({
-        ...current,
-        dashboard,
-        users,
-        projects,
-        tickets,
-      }));
-    });
+        setData((current) => ({
+          ...current,
+          dashboard,
+          users,
+          projects,
+          tickets,
+        }));
+      })
+      .catch((requestError) => {
+        if (cancelled) {
+          return;
+        }
+
+        setError(requestError.message || 'Unable to load dashboard data.');
+      });
 
     return () => {
       cancelled = true;
@@ -1185,32 +1938,20 @@ function App() {
     setError('');
 
     try {
-      const response = await fetch(`${API_BASE}/api/login`, {
+      const payload = await apiRequest('/api/login', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(credentials),
+        body: credentials,
       });
 
-      if (!response.ok) {
-        throw new Error('Invalid login');
-      }
-
+      setData((current) => ({
+        ...current,
+        currentUser: normalizeCurrentUser(payload.user),
+      }));
       setAuthenticated(true);
       setHash('dashboard');
       setPage('dashboard');
     } catch (requestError) {
-      const isDemoLogin =
-        credentials.email === 'admin@talentbank.com' && credentials.password === 'admin123';
-
-      if (isDemoLogin) {
-        setAuthenticated(true);
-        setHash('dashboard');
-        setPage('dashboard');
-      } else {
-        setError('Use the demo credentials or connect the backend login API.');
-      }
+      setError(requestError.message || 'Unable to log in.');
     } finally {
       setLoading(false);
     }
@@ -1218,8 +1959,112 @@ function App() {
 
   const handleLogout = () => {
     setAuthenticated(false);
+    setData(EMPTY_RESPONSE);
+    setShowAddUserModal(false);
+    setEditingUser(null);
+    setSaveUserError('');
+    setCreateUserError('');
+    setDeletingUser(null);
+    setDeleteUserError('');
+    setShowCreateProjectModal(false);
+    setCreateProjectError('');
+    setShowCreateTicketModal(false);
+    setCreateTicketError('');
     setHash('login');
     setPage('login');
+  };
+
+  const handleSaveUser = async (nextUser) => {
+    setSavingUser(true);
+    setSaveUserError('');
+
+    try {
+      await apiRequest(`/api/users/${encodeURIComponent(nextUser.employeeId)}`, {
+        method: 'PUT',
+        body: nextUser,
+      });
+      await syncWorkspaceData();
+      setEditingUser(null);
+    } catch (requestError) {
+      setSaveUserError(requestError.message || 'Unable to save user changes.');
+    } finally {
+      setSavingUser(false);
+    }
+  };
+
+  const handleCreateUser = async (nextUser) => {
+    setCreatingUser(true);
+    setCreateUserError('');
+
+    try {
+      await apiRequest('/api/users', {
+        method: 'POST',
+        body: nextUser,
+      });
+      await syncWorkspaceData();
+      setShowAddUserModal(false);
+    } catch (requestError) {
+      setCreateUserError(requestError.message || 'Unable to create employee.');
+    } finally {
+      setCreatingUser(false);
+    }
+  };
+
+  const handleDeleteUser = async () => {
+    if (!deletingUser) {
+      return;
+    }
+
+    setDeleteUserPending(true);
+    setDeleteUserError('');
+
+    try {
+      await apiRequest(`/api/users/${encodeURIComponent(deletingUser.employeeId)}`, {
+        method: 'DELETE',
+      });
+      await syncWorkspaceData();
+      setDeletingUser(null);
+    } catch (requestError) {
+      setDeleteUserError(requestError.message || 'Unable to delete employee.');
+    } finally {
+      setDeleteUserPending(false);
+    }
+  };
+
+  const handleCreateProject = async (project) => {
+    setCreatingProject(true);
+    setCreateProjectError('');
+
+    try {
+      await apiRequest('/api/projects', {
+        method: 'POST',
+        body: project,
+      });
+      await syncWorkspaceData();
+      setShowCreateProjectModal(false);
+    } catch (requestError) {
+      setCreateProjectError(requestError.message || 'Unable to create project.');
+    } finally {
+      setCreatingProject(false);
+    }
+  };
+
+  const handleCreateTicket = async (ticket) => {
+    setCreatingTicket(true);
+    setCreateTicketError('');
+
+    try {
+      await apiRequest('/api/tickets', {
+        method: 'POST',
+        body: ticket,
+      });
+      await syncWorkspaceData();
+      setShowCreateTicketModal(false);
+    } catch (requestError) {
+      setCreateTicketError(requestError.message || 'Unable to create ticket.');
+    } finally {
+      setCreatingTicket(false);
+    }
   };
 
   if (!authenticated || page === 'login') {
@@ -1234,6 +2079,102 @@ function App() {
         onNavigate={setHash}
         onLogout={handleLogout}
         onOpenResignation={() => setShowResignationModal(true)}
+        onOpenAddUser={() => {
+          setCreateUserError('');
+          setShowAddUserModal(true);
+        }}
+        onEditUser={(user) => {
+          setSaveUserError('');
+          setEditingUser(user);
+        }}
+        onDeleteUser={(user) => {
+          setDeleteUserError('');
+          setDeletingUser(user);
+        }}
+        savingUserId={savingUser && editingUser ? editingUser.employeeId : ''}
+        deletingUserId={
+          deleteUserPending && deletingUser ? deletingUser.employeeId : ''
+        }
+        onOpenCreateProject={() => {
+          setCreateProjectError('');
+          setShowCreateProjectModal(true);
+        }}
+        onOpenCreateTicket={() => {
+          setCreateTicketError('');
+          setShowCreateTicketModal(true);
+        }}
+      />
+      <AddUserModal
+        open={showAddUserModal}
+        saving={creatingUser}
+        error={createUserError}
+        users={data.users}
+        onClose={() => {
+          if (creatingUser) {
+            return;
+          }
+
+          setShowAddUserModal(false);
+          setCreateUserError('');
+        }}
+        onSave={handleCreateUser}
+      />
+      <EditUserModal
+        user={editingUser}
+        saving={savingUser}
+        error={saveUserError}
+        users={data.users}
+        onClose={() => {
+          if (savingUser) {
+            return;
+          }
+
+          setEditingUser(null);
+          setSaveUserError('');
+        }}
+        onSave={handleSaveUser}
+      />
+      <DeleteUserModal
+        user={deletingUser}
+        deleting={deleteUserPending}
+        error={deleteUserError}
+        onClose={() => {
+          if (deleteUserPending) {
+            return;
+          }
+
+          setDeletingUser(null);
+          setDeleteUserError('');
+        }}
+        onConfirm={handleDeleteUser}
+      />
+      <CreateProjectModal
+        open={showCreateProjectModal}
+        saving={creatingProject}
+        error={createProjectError}
+        onClose={() => {
+          if (creatingProject) {
+            return;
+          }
+
+          setShowCreateProjectModal(false);
+          setCreateProjectError('');
+        }}
+        onSave={handleCreateProject}
+      />
+      <CreateTicketModal
+        open={showCreateTicketModal}
+        saving={creatingTicket}
+        error={createTicketError}
+        onClose={() => {
+          if (creatingTicket) {
+            return;
+          }
+
+          setShowCreateTicketModal(false);
+          setCreateTicketError('');
+        }}
+        onSave={handleCreateTicket}
       />
       <ResignationModal
         open={showResignationModal}
