@@ -374,9 +374,6 @@ function Sidebar({ activePage, onNavigate }) {
           </button>
         ))}
       </nav>
-      <div className="sidebar-footnote">
-        Built with React, Node.js, Bootstrap, and MySQL-ready APIs.
-      </div>
     </aside>
   );
 }
